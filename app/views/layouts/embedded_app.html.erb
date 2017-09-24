@@ -26,8 +26,8 @@
       ShopifyApp.init({
         apiKey: "<%= ShopifyApp.configuration.api_key %>",
         shopOrigin: "<%= "https://#{ @shop_session.url }" if @shop_session %>",
-        debug: <%= Rails.env.development? ? 'true' : 'false' %>,
-        forceRedirect: true
+        debug: <%= ['development'].include?(Rails.env) %>,
+        forceRedirect: <%= ['test'].exclude?(Rails.env) %>
       });
     </script>
 

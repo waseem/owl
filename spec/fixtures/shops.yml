@@ -1,0 +1,3 @@
+stylo:
+  shopify_domain: stylo.myshopify.com
+  shopify_token: 'some-token'
