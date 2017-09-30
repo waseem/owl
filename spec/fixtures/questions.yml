@@ -1,0 +1,19 @@
+shine_night:
+  body: "Do these shirts shine during night?"
+  product: shirt
+
+strong:
+  body: "Are these pants strong enough to fight a panda?"
+  product: shirt
+
+XXXXL:
+  body: "Are thee pants available in XXXXL?"
+  product: shirt
+
+transparent:
+  body: "Does this shirt come in transparent color?"
+  product: shirt
+
+rick_n_morty:
+  body: "I want noob noob to wear this shirt"
+  product: shirt

@@ -21,4 +21,16 @@ Things you may want to cover:
 
 * Deployment instructions
 
-* ...
+
+## Compiling Storefront Javascript
+
+script tag id 3376906267
+
+* In `development` environment
+
+    `$ coffee --no-header --output public/question.js -wc lib/assets/javascripts/`
+
+{% if template.name == 'product' %}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'question.js' | asset_url }}" defer="defer"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{ 'question.js' | asset_url }}"></script><![endif]-->
+{% endif %}
