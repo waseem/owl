@@ -1,36 +1,25 @@
-# README
+## Updating Shopify Script Tag
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+script tag id `3376906267`
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
+```
+$ bundle exec rails c
+irb> ShopifyAPI::Session.setup(api_key: ENV['SHOPIFY_CLIENT_API_KEY'], secret: ENV['SHOPIFY_CLIENT_API_SECRET'])
+irb> shop = Shop.first
+irb> session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+irb> ShopifyAPI::Base.activate_session(session)
+irb> script_tag = ShopifyAPI::ScriptTag.find(3376906267)
+irb> script_tag.src = "https://f81ade74.ngrok.io/question.js"
+irb> script_tag.save
+```
 
 ## Compiling Storefront Javascript
-
-script tag id 3376906267
 
 * In `development` environment
 
     `$ coffee --no-header --output public/question.js -wc lib/assets/javascripts/`
 
-{% if template.name == 'product' %}
-    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'question.js' | asset_url }}" defer="defer"></script><!--<![endif]-->
-    <!--[if lte IE 9]><script src="{{ 'question.js' | asset_url }}"></script><![endif]-->
-{% endif %}
+## Potential features that come with paid plan
+
+* Searching of questions and answers
+* Votes on Questions/Sorted by votes
