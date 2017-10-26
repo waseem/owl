@@ -40,7 +40,7 @@
         return $.getJSON(`/a/q/products/${productJSON.id}/questions.json`, this.boundDisplayQuestions).fail(this.boundHandleFailure);
       },
       displayQuestions: function(questionsJSON) {
-        return $('#questions-list').append(this.boundCreateQuestionsHTML(questionsJSON.questions));
+        return $('ul#top-questions-and-answers-list').append(this.boundCreateQuestionsHTML(questionsJSON.questions));
       },
       handleFailure: function(jqXHR) {
         return console.log(jqXHR.responseJSON);
@@ -54,7 +54,7 @@
         return html;
       },
       questionHTML: function(question) {
-        return `<li>${question.body} ${question.created_at}</li>`;
+        return `<li class='question-and-answer-container'> <div class='votes-container'> <div class='votes-elements'> <div class='arrow up'></div> <div class='votes-score'>16</div> <div class='arrow down'></div> </div> </div> <div class='question-and-answer'> ${question.body} </div> </li>`;
       }
     };
     window.QuestionApp.init();

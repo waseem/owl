@@ -33,7 +33,7 @@ myAppJavascript = ($) ->
         .fail(@boundHandleFailure)
 
     displayQuestions: (questionsJSON) ->
-      $('#questions-list').append(@boundCreateQuestionsHTML(questionsJSON.questions))
+      $('ul#top-questions-and-answers-list').append(@boundCreateQuestionsHTML(questionsJSON.questions))
 
     handleFailure: (jqXHR) ->
       console.log(jqXHR.responseJSON)
@@ -46,7 +46,21 @@ myAppJavascript = ($) ->
       html
 
     questionHTML: (question) ->
-      "<li>#{question.body} #{question.created_at}</li>"
+      "
+      <li class='question-and-answer-container'>
+        <div class='votes-container'>
+          <div class='votes-elements'>
+            <div class='arrow up'></div>
+            <div class='votes-score'>16</div>
+            <div class='arrow down'></div>
+          </div>
+        </div>
+
+        <div class='question-and-answer'>
+          #{question.body}
+        </div>
+      </li>
+      "
 
   window.QuestionApp.init()
   window.QuestionApp.displayInitialQuestions()
