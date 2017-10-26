@@ -15,7 +15,7 @@ class QuestionsController < ApplicationController
       end
     end
 
-    question = @product.questions.build(body: params[:body])
+    question = @product.questions.build(body: params[:body], shop: @shop)
     if question.save
       respond_to do |format|
         format.html { redirect_to request.referer }

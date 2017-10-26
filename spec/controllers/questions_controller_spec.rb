@@ -49,7 +49,7 @@ RSpec.describe QuestionsController, type: :controller do
 
         before do
           allow(shop).to receive_message_chain(:products, :find_by_shopify_id).with('existing-product-id').and_return(product)
-          expect(product).to receive_message_chain(:questions, :build).with(body: 'a question body').and_return(question)
+          expect(product).to receive_message_chain(:questions, :build).with(body: 'a question body', shop: shop).and_return(question)
         end
 
         context "question is saved successfully" do
