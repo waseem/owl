@@ -3,4 +3,5 @@ class Shop < ApplicationRecord
 
   has_many :products
   has_many :questions
+  has_many :customers
 end

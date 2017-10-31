@@ -45,29 +45,95 @@ RSpec.describe QuestionsController, type: :controller do
       end
 
       context "product is available" do
-        let(:question) { mock_model(Question) }
-
         before do
           allow(shop).to receive_message_chain(:products, :find_by_shopify_id).with('existing-product-id').and_return(product)
-          expect(product).to receive_message_chain(:questions, :build).with(body: 'a question body', shop: shop).and_return(question)
         end
 
-        context "question is saved successfully" do
-          it "redirects to referer" do
-            expect(question).to receive(:save).with(no_args).and_return(true)
+        shared_examples "question saving" do |customer_params|
+          let(:question) { mock_model(Question) }
+          before do
+            expect(product).to receive_message_chain(:questions, :build).with(body: 'a question body', shop: shop, asker: customer).and_return(question)
+          end
 
-            request.env['HTTP_REFERER'] = 'http://example.com'
-            post :create, params: { product_id: 'existing-product-id', shop: "existing-shop-domain", body: "a question body" }
-            expect(response).to be_redirect
+          context "question is saved successfully" do
+            it "redirects to referer" do
+              expect(question).to receive(:save).with(no_args).and_return(true)
+
+              request.env['HTTP_REFERER'] = 'http://example.com'
+              post :create, params: {
+                product_id: 'existing-product-id', shop: "existing-shop-domain",
+                body: "a question body", customer: customer_params
+              }
+              expect(response).to be_redirect
+            end
+          end
+
+          context "question is saved unsuccessfully" do
+            it "response is bad request" do
+              expect(question).to receive(:save).with(no_args).and_return(false)
+
+              post :create, params: {
+                product_id: 'existing-product-id', shop: "existing-shop-domain",
+                body: "a question body", customer: customer_params
+              }
+              expect(response).to have_http_status(:bad_request)
+            end
           end
         end
 
-        context "question is saved unsuccessfully" do
-          it "response is bad request" do
-            expect(question).to receive(:save).with(no_args).and_return(false)
+        context "customer is unavailable" do
+          context "no customer identifier" do
+            it "response is bad request" do
+              post :create, params: {
+                product_id: 'existing-product-id', shop: "existing-shop-domain",
+                body: "a question body", customer: {
+                  shopify_id: "", email: "", name: ""
+                }
+              }
+              expect(response).to have_http_status(:bad_request)
+            end
+          end
 
-            post :create, params: { product_id: 'existing-product-id', shop: "existing-shop-domain", body: "a question body" }
-            expect(response).to have_http_status(:bad_request)
+          context "customer is saved successfully" do
+            # Fails because of https://github.com/rspec/rspec-rails/issues/707#issuecomment-292793085
+            #it_behaves_like "question saving" do
+              #let(:customer) { mock_model(Customer) }
+              #before do
+                #expect(shop).to receive_message_chain(:customers, :find_by_email).with("customer@shopify.com").and_return(nil)
+                #expect(shop).to receive_message_chain(:customers, :build).with(shopify_id: "", email: "customer@shopify.com", name: "Shopify Customer").and_return(customer)
+                #expect(customer).to receive(:save).with(no_args).and_return(true)
+              #end
+            #end
+          end
+
+          context "customer is saved unsuccessfully" do
+            # Fails because of https://github.com/rspec/rspec-rails/issues/707#issuecomment-292793085
+          end
+        end
+
+        context "customer is available" do
+          customer_params = {
+            shopify_id: "",
+            name: "Shopify Customer",
+            email: "customer@shopify.com"
+          }
+          it_behaves_like "question saving", customer_params do
+            let(:customer) { mock_model(Customer) }
+            before do
+              expect(shop).to receive_message_chain(:customers, :find_by_email).with("customer@shopify.com").and_return(customer)
+            end
+          end
+
+          customer_params = {
+            shopify_id: 84590016801,
+            name: "",
+            email: ""
+          }
+          it_behaves_like "question saving", customer_params do
+            let(:customer) { mock_model(Customer) }
+            before do
+              expect(shop).to receive_message_chain(:customers, :find_by_shopify_id).with("84590016801").and_return(customer)
+            end
           end
         end
       end

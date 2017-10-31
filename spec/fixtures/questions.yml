@@ -1,19 +1,29 @@
 shine_night:
   body: "Do these shirts shine during night?"
   product: shirt
+  shop: stylo
+  asker: without_shopify_id
 
 strong:
   body: "Are these pants strong enough to fight a panda?"
   product: shirt
+  shop: stylo
+  asker: without_shopify_id
 
 XXXXL:
   body: "Are thee pants available in XXXXL?"
   product: shirt
+  shop: stylo
+  asker: with_shopify_id
 
 transparent:
   body: "Does this shirt come in transparent color?"
   product: shirt
+  shop: stylo
+  asker: without_shopify_id
 
 rick_n_morty:
   body: "I want noob noob to wear this shirt"
   product: shirt
+  shop: stylo
+  asker: without_shopify_id

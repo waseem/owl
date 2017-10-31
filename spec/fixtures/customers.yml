@@ -1,0 +1,8 @@
+with_shopify_id:
+  shop: stylo
+  shopify_id: 84590016801
+
+without_shopify_id:
+  shop: stylo
+  name: "Waseem"
+  email: "talk.to.waseem@gmail.com"
