@@ -23,7 +23,39 @@ myAppJavascript = ($) ->
       @boundHandleFailure = @handleFailure.bind(@)
       @boundCreateQuestionsHTML = @createQuestionsHTML.bind(@)
       @boundQuestionHTML = @questionHTML.bind(@)
+      @boundInitEvents = @initEvents.bind(@)
+      @boundSubmitQuestion = @submitQuestion.bind(@)
+      @boundHandleQuestionSubmission = @handleQuestionSubmission.bind(@)
+      @boundSuccessfulQuestionSubmission = @successfulQuestionSubmission.bind(@)
+      @boundFailedQuestionSubmission = @failedQuestionSubmission.bind(@)
+
+      @boundInitEvents()
       @
+
+    initEvents: ->
+      @boundSubmitQuestion()
+
+    submitQuestion: ->
+      $('form#product-question-form').submit(@boundHandleQuestionSubmission)
+
+    handleQuestionSubmission: (event) ->
+      event.preventDefault()
+      $.post(
+        url: event.currentTarget.action
+        data: $(event.currentTarget).serialize()
+        dataType: "json"
+      ).done(@boundSuccessfulQuestionSubmission)
+        .fail(@boundFailedQuestionSubmission)
+
+    successfulQuestionSubmission: (questionJSON, status, jqXHR) ->
+      document.getElementById("product-question-form").reset()
+      questionsJSON = {
+        questions: [questionJSON.question]
+      }
+      @boundDisplayQuestions(questionsJSON)
+
+    failedQuestionSubmission: (jqXHR) ->
+      console.log(jqXHR.responseJSON)
 
     displayInitialQuestions: ->
       productJSON = JSON.parse($('script#product-questions-data').text())

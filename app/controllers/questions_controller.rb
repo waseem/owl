@@ -11,7 +11,8 @@ class QuestionsController < ApplicationController
       @product = @shop.products.build(shopify_id: params[:product_id])
       unless @product.save
         respond_to do |format|
-          format.html { head :internal_server_error } # Something went wrong saving the product
+          # Something went wrong saving the product
+          format.json { render(json: { error: "product did not save" }, status: :internal_server_error) }
         end
         return
       end
@@ -21,20 +22,23 @@ class QuestionsController < ApplicationController
       @customer = @shop.customers.build(shopify_id: params[:customer][:shopify_id], name: params[:customer][:name], email: params[:customer][:email])
       unless @customer.save
         respond_to do |format|
-          format.html { head :bad_request } # Customer is invalid. Tell the client what is invalid about it.
+          # Customer is invalid. Tell the client what is invalid about it.
+          format.json { render(json: { error: "customer creation failed" }, status: :bad_request) }
         end
+        return
       end
     end
 
-    question = @product.questions.build(body: params[:body], shop: @shop, asker: @customer)
-    if question.save
+    @question = @product.questions.build(body: params[:body], shop: @shop, asker: @customer)
+    if @question.save
       respond_to do |format|
-        format.html { redirect_to request.referer }
+        format.json { render("questions/show") }
       end
 
     else
       respond_to do |format|
-        format.html { head :bad_request } # Question is invalid. Tell the client what is invalid about it.
+        # Question is invalid. Tell the client what is invalid about it.
+        format.json { render(json: { error: "question creation failed" }, status: :bad_request) }
       end
     end
   end
@@ -47,7 +51,7 @@ class QuestionsController < ApplicationController
       return
     end
 
-    @questions = @product.questions.limit(4)
+    @questions = @product.questions.limit(10)
     respond_to do |format|
       format.json
     end
@@ -59,7 +63,6 @@ class QuestionsController < ApplicationController
     @shop = Shop.find_by_shopify_domain(params[:shop])
     unless @shop
       respond_to do |format|
-        format.html { head :unauthorized }
         format.json { render(json: { error: "shop not found" }, status: :unauthorized) }
       end
       return
@@ -79,9 +82,9 @@ class QuestionsController < ApplicationController
 
     else
       respond_to do |format|
-        format.html { head :bad_request }
         format.json { render(json: { error: "email can not be blank" }, status: :unauthorized) }
       end
+      return
     end
   end
 end

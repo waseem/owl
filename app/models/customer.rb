@@ -1,5 +1,6 @@
 class Customer < ApplicationRecord
   has_many :questions
+  belongs_to :shop
 
   validate :atleast_one_identifier_present
 

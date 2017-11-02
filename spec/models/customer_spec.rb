@@ -1,8 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Customer, type: :model do
+  fixtures :shops
+
   describe "valid customer" do
-    let(:customer) { Customer.new }
+    let!(:shop) { shops(:stylo) }
+    let(:customer) { Customer.new(shop: shop) }
 
     context "without shopify id" do
       it "is invalid without name" do

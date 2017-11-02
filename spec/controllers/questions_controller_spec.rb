@@ -2,26 +2,20 @@ require 'rails_helper'
 
 RSpec.describe QuestionsController, type: :controller do
   render_views
-  fixtures :shops, :products, :questions
+  fixtures :shops, :products, :questions, :customers
 
   describe "#create" do
-    let(:shop) { mock_model(Shop) }
+    let!(:shop) { shops(:stylo) }
 
     context "application is not installed" do
       it "response is unauthorized" do
-        expect(Shop).to receive(:find_by_shopify_domain).with('non-existing').and_return(nil)
-
-        post :create, params: { product_id: 'foo', shop: "non-existing" }
+        post :create, params: { product_id: 'foo', shop: "non-existing" }, format: :json
         expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context "application is installed" do
-      let(:product) { mock_model(Product) }
-
-      before do
-        expect(Shop).to receive(:find_by_shopify_domain).with('existing-shop-domain').and_return(shop)
-      end
+      let!(:product) { products(:shirt)  }
 
       context "product is unavailable" do
         before do
@@ -33,7 +27,7 @@ RSpec.describe QuestionsController, type: :controller do
           xit "response is error" do # Fails because of https://github.com/rspec/rspec-rails/issues/707#issuecomment-292793085
             expect(product).to receive(:save).with(no_args).and_return(false)
 
-            post :create, params: { product_id: 'non-existing-product-id', shop: 'existing-shop-domain' }
+            post :create, params: { product_id: 'non-existing-product-id', shop: 'existing-shop-domain' }, format: :json
             expect(response).to have_http_status(:internal_server_error)
           end
         end
@@ -45,37 +39,30 @@ RSpec.describe QuestionsController, type: :controller do
       end
 
       context "product is available" do
-        before do
-          allow(shop).to receive_message_chain(:products, :find_by_shopify_id).with('existing-product-id').and_return(product)
-        end
-
-        shared_examples "question saving" do |customer_params|
-          let(:question) { mock_model(Question) }
-          before do
-            expect(product).to receive_message_chain(:questions, :build).with(body: 'a question body', shop: shop, asker: customer).and_return(question)
-          end
-
+        shared_examples "question saving" do
           context "question is saved successfully" do
-            it "redirects to referer" do
-              expect(question).to receive(:save).with(no_args).and_return(true)
-
-              request.env['HTTP_REFERER'] = 'http://example.com'
+            it "renders question json" do
               post :create, params: {
-                product_id: 'existing-product-id', shop: "existing-shop-domain",
-                body: "a question body", customer: customer_params
-              }
-              expect(response).to be_redirect
+                product_id: product.shopify_id, shop: shop.shopify_domain,
+                body: "a valid question body", customer: customer_params
+              }, format: :json
+
+              expect(response).to have_http_status(:success)
+
+              json = ActiveSupport::JSON.decode(response.body)
+              expect(json["question"]["id"]).to be_present
+              expect(json["question"]["body"]).to eq("a valid question body")
+              expect(json["question"]["shopify_product_id"]).to eq(product.shopify_id)
+              expect(json["question"]["created_at"]).to be_present
             end
           end
 
           context "question is saved unsuccessfully" do
             it "response is bad request" do
-              expect(question).to receive(:save).with(no_args).and_return(false)
-
               post :create, params: {
-                product_id: 'existing-product-id', shop: "existing-shop-domain",
-                body: "a question body", customer: customer_params
-              }
+                product_id: product.shopify_id, shop: shop.shopify_domain,
+                body: "", customer: customer_params
+              }, format: :json
               expect(response).to have_http_status(:bad_request)
             end
           end
@@ -85,55 +72,60 @@ RSpec.describe QuestionsController, type: :controller do
           context "no customer identifier" do
             it "response is bad request" do
               post :create, params: {
-                product_id: 'existing-product-id', shop: "existing-shop-domain",
+                product_id: product.shopify_id, shop: shop.shopify_domain,
                 body: "a question body", customer: {
                   shopify_id: "", email: "", name: ""
                 }
-              }
-              expect(response).to have_http_status(:bad_request)
+              }, format: :json
+              expect(response).to have_http_status(:unauthorized)
             end
           end
 
           context "customer is saved successfully" do
-            # Fails because of https://github.com/rspec/rspec-rails/issues/707#issuecomment-292793085
-            #it_behaves_like "question saving" do
-              #let(:customer) { mock_model(Customer) }
-              #before do
-                #expect(shop).to receive_message_chain(:customers, :find_by_email).with("customer@shopify.com").and_return(nil)
-                #expect(shop).to receive_message_chain(:customers, :build).with(shopify_id: "", email: "customer@shopify.com", name: "Shopify Customer").and_return(customer)
-                #expect(customer).to receive(:save).with(no_args).and_return(true)
-              #end
-            #end
+            it_behaves_like "question saving" do
+              let(:customer_params) {
+                {
+                  name: "Customer Name",
+                  email: "customer@shopify.com"
+                }
+              }
+            end
           end
 
           context "customer is saved unsuccessfully" do
-            # Fails because of https://github.com/rspec/rspec-rails/issues/707#issuecomment-292793085
+            it "renders bad request" do
+              post :create, params: {
+                product_id: product.shopify_id, shop: shop.shopify_domain,
+                body: "a question body", customer: {
+                  shopify_id: "", email: "customer@shopify.com", name: ""
+                }
+              }, format: :json
+              expect(response).to have_http_status(:bad_request)
+            end
           end
         end
 
         context "customer is available" do
-          customer_params = {
-            shopify_id: "",
-            name: "Shopify Customer",
-            email: "customer@shopify.com"
-          }
-          it_behaves_like "question saving", customer_params do
-            let(:customer) { mock_model(Customer) }
-            before do
-              expect(shop).to receive_message_chain(:customers, :find_by_email).with("customer@shopify.com").and_return(customer)
-            end
+          it_behaves_like "question saving" do
+            let!(:customer) { customers(:without_shopify_id) }
+            let(:customer_params) {
+              {
+                name: customer.name,
+                email: customer.email,
+                shopify_id: customer.shopify_id
+              }
+            }
           end
 
-          customer_params = {
-            shopify_id: 84590016801,
-            name: "",
-            email: ""
-          }
-          it_behaves_like "question saving", customer_params do
-            let(:customer) { mock_model(Customer) }
-            before do
-              expect(shop).to receive_message_chain(:customers, :find_by_shopify_id).with("84590016801").and_return(customer)
-            end
+          it_behaves_like "question saving" do
+            let!(:customer) { customers(:with_shopify_id) }
+            let(:customer_params) {
+              {
+                name: customer.name,
+                email: customer.email,
+                shopify_id: customer.shopify_id
+              }
+            }
           end
         end
       end
@@ -142,11 +134,12 @@ RSpec.describe QuestionsController, type: :controller do
 
   describe "#index" do
     let!(:shop) { shops(:stylo) }
+
     context "application is not installed" do
       it "response is unauthorized" do
         expect(Shop).to receive(:find_by_shopify_domain).with('non-existing').and_return(nil)
 
-        post :index, params: { product_id: 'foo', shop: "non-existing" }
+        post :index, params: { product_id: 'foo', shop: "non-existing" }, format: :json
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -166,7 +159,7 @@ RSpec.describe QuestionsController, type: :controller do
         let!(:product) { products(:shirt) }
 
         it "renders first four product questions json" do
-          questions = product.questions.limit(4)
+          questions = product.questions.limit(10)
           expected_json = {"questions" => []}
           questions.each do |question|
             expected_json["questions"].push({

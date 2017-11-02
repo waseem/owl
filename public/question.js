@@ -30,7 +30,38 @@
         this.boundHandleFailure = this.handleFailure.bind(this);
         this.boundCreateQuestionsHTML = this.createQuestionsHTML.bind(this);
         this.boundQuestionHTML = this.questionHTML.bind(this);
+        this.boundInitEvents = this.initEvents.bind(this);
+        this.boundSubmitQuestion = this.submitQuestion.bind(this);
+        this.boundHandleQuestionSubmission = this.handleQuestionSubmission.bind(this);
+        this.boundSuccessfulQuestionSubmission = this.successfulQuestionSubmission.bind(this);
+        this.boundFailedQuestionSubmission = this.failedQuestionSubmission.bind(this);
+        this.boundInitEvents();
         return this;
+      },
+      initEvents: function() {
+        return this.boundSubmitQuestion();
+      },
+      submitQuestion: function() {
+        return $('form#product-question-form').submit(this.boundHandleQuestionSubmission);
+      },
+      handleQuestionSubmission: function(event) {
+        event.preventDefault();
+        return $.post({
+          url: event.currentTarget.action,
+          data: $(event.currentTarget).serialize(),
+          dataType: "json"
+        }).done(this.boundSuccessfulQuestionSubmission).fail(this.boundFailedQuestionSubmission);
+      },
+      successfulQuestionSubmission: function(questionJSON, status, jqXHR) {
+        var questionsJSON;
+        document.getElementById("product-question-form").reset();
+        questionsJSON = {
+          questions: [questionJSON.question]
+        };
+        return this.boundDisplayQuestions(questionsJSON);
+      },
+      failedQuestionSubmission: function(jqXHR) {
+        return console.log(jqXHR.responseJSON);
       },
       displayInitialQuestions: function() {
         var productJSON;
