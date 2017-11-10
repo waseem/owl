@@ -3,5 +3,7 @@ class Question < ApplicationRecord
   belongs_to :shop
   belongs_to :asker, class_name: "Customer"
 
-  validates :body, presence: true, length: { in: 16..250 }
+  scope :new_first, -> { order("id DESC") }
+
+  validates :body, presence: true, length: { in: 16..256 }
 end

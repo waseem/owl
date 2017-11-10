@@ -1,0 +1,35 @@
+<% content_for :javascript do %>
+  <script type="text/javascript">
+    ShopifyApp.ready(function(){
+      ShopifyApp.Bar.initialize({ title: "Question" });
+    });
+  </script>
+<% end %>
+
+<h2>Displaying Question# <%= @question.id %></h2>
+
+<div class="question-container">
+  <div class="question-body">
+    <%= @question.body %>
+  </div>
+
+  <div class="product-container">
+    <li><%= link_to @shopify_product.title, "https://#{@shop_session.url}/admin/products/#{@shopify_product.id}", target: "_top" %></li>
+  </div>
+
+  <div class="asker-container">
+    <div class="email">
+      <%= @question.asker.email %>
+    </div>
+
+    <div class="name">
+      <%= @question.asker.name %>
+    </div>
+
+    <% if @question.asker.shopify_id %>
+      <%= link_to @question.asker.shopify_id, "https://#{@shop_session.url}/admin/customers/#{@question.asker.shopify_id}", target: "_top" %>
+    <% end %>
+  </div>
+</div>
+
+<%= link_to("Dashboard", admin_root_path) %>

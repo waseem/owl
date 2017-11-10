@@ -1,0 +1,31 @@
+<% content_for :javascript do %>
+  <script type="text/javascript">
+    ShopifyApp.ready(function(){
+      ShopifyApp.Bar.initialize({ title: "Dashboard" });
+    });
+  </script>
+<% end %>
+
+<h2>Questions</h2>
+
+<table class="questions">
+  <thead>
+    <th>ID</th>
+    <th>Question</th>
+  </thead>
+
+  <tbody>
+    <% @questions.each do |question| %>
+      <tr>
+        <td>
+          <%= link_to(question.id, admin_question_path(question.id)) %>
+        </td>
+        <td>
+          <%= question.body %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate(@questions) %>
