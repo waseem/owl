@@ -6,26 +6,8 @@
   </script>
 <% end %>
 
-<h2>Questions</h2>
+<h2>Unpublished Questions</h2>
 
-<table class="questions">
-  <thead>
-    <th>ID</th>
-    <th>Question</th>
-  </thead>
+<%= link_to("Show Published Questions", admin_questions_path(published: true)) %>
 
-  <tbody>
-    <% @questions.each do |question| %>
-      <tr>
-        <td>
-          <%= link_to(question.id, admin_question_path(question.id)) %>
-        </td>
-        <td>
-          <%= question.body %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= paginate(@questions) %>
+<%= render(partial: 'admin/questions/questions', object: @questions) %>

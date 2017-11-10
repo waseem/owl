@@ -1,0 +1,25 @@
+<table class="questions">
+  <thead>
+    <th>ID</th>
+    <th>Question</th>
+    <th>Published</th>
+  </thead>
+
+  <tbody>
+    <% questions.each do |question| %>
+      <tr>
+        <td>
+          <%= link_to(question.id, admin_question_path(question.id)) %>
+        </td>
+        <td>
+          <%= question.body %>
+        </td>
+        <td>
+          <%= yes_or_no(question.published) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate(questions) %>

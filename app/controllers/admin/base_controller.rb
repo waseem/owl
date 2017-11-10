@@ -1,5 +1,7 @@
 module Admin
   class BaseController < ShopifyApp::AuthenticatedController
+    helper ApplicationHelper
+
     helper_method :current_shop
     before_action :shop_required
 

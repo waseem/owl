@@ -30,6 +30,8 @@
       <%= link_to @question.asker.shopify_id, "https://#{@shop_session.url}/admin/customers/#{@question.asker.shopify_id}", target: "_top" %>
     <% end %>
   </div>
+
+  <%= link_to((@question.published? ? "Unpublish" : "Publish"), admin_question_path(@question), method: :put) %>
 </div>
 
 <%= link_to("Dashboard", admin_root_path) %>
