@@ -31,7 +31,37 @@
     <% end %>
   </div>
 
-  <%= link_to((@question.published? ? "Unpublish" : "Publish"), admin_question_path(@question), method: :put) %>
+  <%= link_to((@question.published? ? "Unpublish from Store" : "Publish to Store"), admin_question_path(@question), method: :put) %>
+
+  <div class="answers-container">
+    A total of <%= @question.answers_count %> answers.
+
+    <ul>
+      <% @question.answers.each do |answer| %>
+        <% if answer.persisted? %>
+          <li><%= answer.body %> | <%= link_to("Edit", edit_admin_question_answer_path(@question, answer)) %> | <%= link_to("Delete", admin_question_answer_path(@question, answer), method: :delete) %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="answer-form-container">
+    Answer this question:
+    <br />
+    <%= form_for([:admin, @question, @answer]) do |f| %>
+      <% if @answer.errors.any? %>
+        <ul class="answer-errors">
+          <% @answer.errors.full_messages.each do |error| %>
+            <li><%= error %></li>
+          <% end %>
+        </ul>
+      <% end %>
+      <%= f.text_area :body %>
+      <br />
+
+      <%= f.submit %>
+    <% end %>
+  </div>
 </div>
 
 <%= link_to("Dashboard", admin_root_path) %>

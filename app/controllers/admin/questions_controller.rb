@@ -4,6 +4,7 @@ module Admin
 
     def show
       @shopify_product = ShopifyAPI::Product.find(@question.product.shopify_id)
+      @answer = @question.answers.build
     end
 
     def index

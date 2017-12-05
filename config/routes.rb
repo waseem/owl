@@ -12,6 +12,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: 'dashboards#show'
-    resources :questions, except: [:new, :create]
+    resources :questions, except: [:new, :create] do
+      resources :answers, except: [:new]
+    end
   end
 end
