@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe QuestionsController, type: :controller do
   render_views
-  fixtures :shops, :products, :questions, :customers
+  fixtures :shops, :products, :questions, :customers, :answers
 
   describe "#create" do
     let!(:shop) { shops(:stylo) }
@@ -159,14 +159,24 @@ RSpec.describe QuestionsController, type: :controller do
         let!(:product) { products(:shirt) }
 
         it "renders first four product questions json" do
-          questions = product.questions.limit(10)
+          questions = product.questions.published.limit(10)
           expected_json = {"questions" => []}
           questions.each do |question|
             expected_json["questions"].push({
               "id" => question.id,
+              "published" => question.published,
+              "answers_count" => question.answers_count,
               "body" => question.body,
               "shopify_product_id" => product.shopify_id,
-              "created_at" => question.created_at.strftime("%d %b, %Y")
+              "created_at" => question.created_at.strftime("%d %B, %Y"),
+              "answers" => question.answers.collect do |answer|
+                {
+                  "id" => answer.id,
+                  "body" => answer.body,
+                  "question_id" => answer.question_id,
+                  "created_at" => answer.created_at.strftime("%d %B, %Y")
+                }
+              end
             })
           end
 

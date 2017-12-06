@@ -3,6 +3,7 @@ shine_night:
   product: shirt
   shop: stylo
   asker: without_shopify_id
+  published: true
 
 strong:
   body: "Are these pants strong enough to fight a panda?"

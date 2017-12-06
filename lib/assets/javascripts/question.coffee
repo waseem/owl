@@ -22,7 +22,9 @@ myAppJavascript = ($) ->
       @boundDisplayQuestions = @displayQuestions.bind(@)
       @boundHandleFailure = @handleFailure.bind(@)
       @boundCreateQuestionsHTML = @createQuestionsHTML.bind(@)
+      @boundCreateAnswersHTML = @createAnswersHTML.bind(@)
       @boundQuestionHTML = @questionHTML.bind(@)
+      @boundAnswerHTML = @answerHTML.bind(@)
       @boundInitEvents = @initEvents.bind(@)
       @boundSubmitQuestion = @submitQuestion.bind(@)
       @boundHandleQuestionSubmission = @handleQuestionSubmission.bind(@)
@@ -77,6 +79,23 @@ myAppJavascript = ($) ->
       )
       html
 
+    createAnswersHTML: (answers) ->
+      html = ""
+      $.each(answers, (index, answer) =>
+        html += @boundAnswerHTML(answer)
+      )
+      html
+
+    answerHTML: (answer) ->
+      "
+      <div class='answer'>
+        #{answer.body}
+        <div class='answer-created-at'>
+          on #{answer.created_at}
+        </div>
+      </div>
+      "
+
     questionHTML: (question) ->
       "
       <li class='question-and-answer-container'>
@@ -89,7 +108,17 @@ myAppJavascript = ($) ->
         </div>
 
         <div class='question-and-answer'>
-          #{question.body}
+          <div class='question-container'>
+            <div class='question-header'><span class='question-text'>Question:</span></div>
+            <div class='question-body'>#{question.body}</div>
+          </div>
+
+          <div class='answers-container'>
+            <div class='answer-header'><span class='answer-text'>Answer:</span></div>
+            <div class='answers'>
+              #{@boundCreateAnswersHTML(question.answers)}
+            </div>
+          </div>
         </div>
       </li>
       "

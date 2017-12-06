@@ -1,0 +1,4 @@
+shining_pants:
+  body: "Yes these pants shine during night. They re-charge during daytime"
+  question: shine_night
+  shop: stylo
