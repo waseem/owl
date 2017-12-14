@@ -51,7 +51,7 @@ class QuestionsController < ApplicationController
       return
     end
 
-    @questions = @product.questions.published.limit(10)
+    @questions = @product.questions.published.page(params[:page]).per(4)
     respond_to do |format|
       format.json
     end

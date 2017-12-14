@@ -26,6 +26,7 @@
     window.QuestionApp = {
       init: function() {
         this.boundDisplayInitialQuestions = this.displayInitialQuestions.bind(this);
+        this.boundFetchAndDisplayQuestions = this.fetchAndDisplayQuestions.bind(this);
         this.boundDisplayQuestions = this.displayQuestions.bind(this);
         this.boundHandleFailure = this.handleFailure.bind(this);
         this.boundCreateQuestionsHTML = this.createQuestionsHTML.bind(this);
@@ -34,17 +35,29 @@
         this.boundAnswerHTML = this.answerHTML.bind(this);
         this.boundInitEvents = this.initEvents.bind(this);
         this.boundSubmitQuestion = this.submitQuestion.bind(this);
+        this.boundMoreQuestionLinkEvent = this.moreQuestionLinkEvent.bind(this);
+        this.boundAddOrRemoveMoreQuestionsLink = this.addOrRemoveMoreQuestionsLink.bind(this);
         this.boundHandleQuestionSubmission = this.handleQuestionSubmission.bind(this);
         this.boundSuccessfulQuestionSubmission = this.successfulQuestionSubmission.bind(this);
         this.boundFailedQuestionSubmission = this.failedQuestionSubmission.bind(this);
+        this.boundDisplayNextPageOfQuestions = this.displayNextPageOfQuestions.bind(this);
         this.boundInitEvents();
         return this;
       },
       initEvents: function() {
-        return this.boundSubmitQuestion();
+        this.boundSubmitQuestion();
+        return this.boundMoreQuestionLinkEvent();
       },
       submitQuestion: function() {
         return $('form#product-question-form').submit(this.boundHandleQuestionSubmission);
+      },
+      moreQuestionLinkEvent: function() {
+        return $('a#show-more-questions').click(this.boundDisplayNextPageOfQuestions);
+      },
+      displayNextPageOfQuestions: function() {
+        var next_page;
+        next_page = $('a#show-more-questions').data('current-page') + 1;
+        return this.boundFetchAndDisplayQuestions(next_page);
       },
       handleQuestionSubmission: function(event) {
         event.preventDefault();
@@ -66,17 +79,30 @@
         return console.log(jqXHR.responseJSON);
       },
       displayInitialQuestions: function() {
+        return this.boundFetchAndDisplayQuestions(1);
+      },
+      fetchAndDisplayQuestions: function(page) {
         var productJSON;
         productJSON = JSON.parse($('script#product-questions-data').text());
         // Make /a/q/ part of the url configurable.
         // A shop may change the proxy URL in APP specific settings
-        return $.getJSON(`/a/q/products/${productJSON.id}/questions.json`, this.boundDisplayQuestions).fail(this.boundHandleFailure);
+        return $.getJSON(`/a/q/products/${productJSON.id}/questions.json`, {
+          page: page
+        }, this.boundDisplayQuestions).fail(this.boundHandleFailure);
       },
       displayQuestions: function(questionsJSON) {
-        return $('ul#top-questions-and-answers-list').append(this.boundCreateQuestionsHTML(questionsJSON.questions));
+        $('ul#top-questions-and-answers-list').append(this.boundCreateQuestionsHTML(questionsJSON.questions));
+        return this.boundAddOrRemoveMoreQuestionsLink(questionsJSON.pagination);
       },
       handleFailure: function(jqXHR) {
         return console.log(jqXHR.responseJSON);
+      },
+      addOrRemoveMoreQuestionsLink: function(pagination) {
+        if (pagination.is_last_page) {
+          return $('a#show-more-questions').hide();
+        } else {
+          return $('a#show-more-questions').data('current-page', pagination.current_page).show();
+        }
       },
       createQuestionsHTML: function(questions) {
         var html;

@@ -19,6 +19,7 @@ myAppJavascript = ($) ->
   window.QuestionApp =
     init: ->
       @boundDisplayInitialQuestions = @displayInitialQuestions.bind(@)
+      @boundFetchAndDisplayQuestions = @fetchAndDisplayQuestions.bind(@)
       @boundDisplayQuestions = @displayQuestions.bind(@)
       @boundHandleFailure = @handleFailure.bind(@)
       @boundCreateQuestionsHTML = @createQuestionsHTML.bind(@)
@@ -27,18 +28,29 @@ myAppJavascript = ($) ->
       @boundAnswerHTML = @answerHTML.bind(@)
       @boundInitEvents = @initEvents.bind(@)
       @boundSubmitQuestion = @submitQuestion.bind(@)
+      @boundMoreQuestionLinkEvent = @moreQuestionLinkEvent.bind(@)
+      @boundAddOrRemoveMoreQuestionsLink = @addOrRemoveMoreQuestionsLink.bind(@)
       @boundHandleQuestionSubmission = @handleQuestionSubmission.bind(@)
       @boundSuccessfulQuestionSubmission = @successfulQuestionSubmission.bind(@)
       @boundFailedQuestionSubmission = @failedQuestionSubmission.bind(@)
+      @boundDisplayNextPageOfQuestions = @displayNextPageOfQuestions.bind(@)
 
       @boundInitEvents()
       @
 
     initEvents: ->
       @boundSubmitQuestion()
+      @boundMoreQuestionLinkEvent()
 
     submitQuestion: ->
       $('form#product-question-form').submit(@boundHandleQuestionSubmission)
+
+    moreQuestionLinkEvent: ->
+      $('a#show-more-questions').click(@boundDisplayNextPageOfQuestions)
+
+    displayNextPageOfQuestions: ->
+      next_page = $('a#show-more-questions').data('current-page') + 1
+      @boundFetchAndDisplayQuestions(next_page)
 
     handleQuestionSubmission: (event) ->
       event.preventDefault()
@@ -60,17 +72,27 @@ myAppJavascript = ($) ->
       console.log(jqXHR.responseJSON)
 
     displayInitialQuestions: ->
+      @boundFetchAndDisplayQuestions(1)
+
+    fetchAndDisplayQuestions: (page) ->
       productJSON = JSON.parse($('script#product-questions-data').text())
       # Make /a/q/ part of the url configurable.
       # A shop may change the proxy URL in APP specific settings
-      $.getJSON("/a/q/products/#{productJSON.id}/questions.json", @boundDisplayQuestions)
+      $.getJSON("/a/q/products/#{productJSON.id}/questions.json", { page: page }, @boundDisplayQuestions)
         .fail(@boundHandleFailure)
 
     displayQuestions: (questionsJSON) ->
       $('ul#top-questions-and-answers-list').append(@boundCreateQuestionsHTML(questionsJSON.questions))
+      @boundAddOrRemoveMoreQuestionsLink(questionsJSON.pagination)
 
     handleFailure: (jqXHR) ->
       console.log(jqXHR.responseJSON)
+
+    addOrRemoveMoreQuestionsLink: (pagination) ->
+      if pagination.is_last_page
+        $('a#show-more-questions').hide()
+      else
+        $('a#show-more-questions').data('current-page', pagination.current_page).show()
 
     createQuestionsHTML: (questions) ->
       html = ""
