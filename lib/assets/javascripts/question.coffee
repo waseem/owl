@@ -121,14 +121,6 @@ myAppJavascript = ($) ->
     questionHTML: (question) ->
       "
       <li class='question-and-answer-container'>
-        <div class='votes-container'>
-          <div class='votes-elements'>
-            <div class='arrow up'></div>
-            <div class='votes-score'>16</div>
-            <div class='arrow down'></div>
-          </div>
-        </div>
-
         <div class='question-and-answer'>
           <div class='question-container'>
             <div class='question-header'><span class='question-text'>Question:</span></div>

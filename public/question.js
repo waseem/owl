@@ -124,7 +124,7 @@
         return `<div class='answer'> ${answer.body} <div class='answer-created-at'> on ${answer.created_at} </div> </div>`;
       },
       questionHTML: function(question) {
-        return `<li class='question-and-answer-container'> <div class='votes-container'> <div class='votes-elements'> <div class='arrow up'></div> <div class='votes-score'>16</div> <div class='arrow down'></div> </div> </div> <div class='question-and-answer'> <div class='question-container'> <div class='question-header'><span class='question-text'>Question:</span></div> <div class='question-body'>${question.body}</div> </div> <div class='answers-container'> <div class='answer-header'><span class='answer-text'>Answer:</span></div> <div class='answers'> ${this.boundCreateAnswersHTML(question.answers)} </div> </div> </div> </li>`;
+        return `<li class='question-and-answer-container'> <div class='question-and-answer'> <div class='question-container'> <div class='question-header'><span class='question-text'>Question:</span></div> <div class='question-body'>${question.body}</div> </div> <div class='answers-container'> <div class='answer-header'><span class='answer-text'>Answer:</span></div> <div class='answers'> ${this.boundCreateAnswersHTML(question.answers)} </div> </div> </div> </li>`;
       }
     };
     window.QuestionApp.init();
