@@ -5,8 +5,8 @@ class Question < ApplicationRecord
 
   has_many :answers
 
-  scope :new_first, -> { order("id DESC") }
-  scope :published, -> { where(published: true) }
+  scope :new_first,   -> { order("id DESC") }
+  scope :published,   -> { where(published: true) }
 
   validates :body, presence: true, length: { in: 16..256 }
 end

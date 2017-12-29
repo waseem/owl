@@ -8,7 +8,12 @@ module Admin
     end
 
     def index
-      @questions = current_shop.questions.where(published: params[:published]).page(params[:page])
+      if params[:published] == 'all'
+        @questions = current_shop.questions.page(params[:page])
+
+      else
+        @questions = current_shop.questions.where(published: params[:published]).page(params[:page])
+      end
     end
 
     def update

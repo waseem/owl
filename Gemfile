@@ -9,7 +9,6 @@ end
 gem 'rails', '~> 5.1.4'
 gem 'pg'
 gem 'puma', '~> 3.7'
-gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
 gem 'turbolinks', '~> 5'
@@ -18,6 +17,10 @@ gem 'jbuilder', '~> 2.5'
 gem 'dotenv-rails'
 gem 'shopify_app'
 gem 'kaminari'
+
+gem 'jquery-rails'
+gem 'therubyracer'
+gem 'less-rails-bootstrap'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

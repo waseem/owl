@@ -11,12 +11,22 @@
   </head>
 
   <body>
-    <div class="app-wrapper">
-      <div class="app-content">
-        <main role="main">
-          <%= yield %>
-        </main>
+    <nav class="navbar navbar-default">
+      <%= render(partial: 'layouts/navigation') %>
+    </nav>
+
+    <div class="row-fluid">
+      <div class="span3">&nbsp;</div>
+
+      <div class="span6">
+        <div class="content">
+          <div class="row">
+            <%= yield %>
+          </div>
+        </div>
       </div>
+
+      <div class="span3">&nbsp;</div>
     </div>
 
     <%= render 'layouts/flash_messages' %>

@@ -9,15 +9,15 @@
 <h2>Displaying Question# <%= @question.id %></h2>
 
 <div class="question-container">
-  <div class="question-body">
-    <%= @question.body %>
+  <div class="product-container well well-sm">
+    <span><strong>Product:</strong> <%= link_to @shopify_product.title, "https://#{@shop_session.url}/admin/products/#{@shopify_product.id}", target: "_top" %></span>
   </div>
 
-  <div class="product-container">
-    <li><%= link_to @shopify_product.title, "https://#{@shop_session.url}/admin/products/#{@shopify_product.id}", target: "_top" %></li>
-  </div>
+  <div class="question-body well well-lg">
+    <p class="lead">
+      <%= @question.body %>
+    </p>
 
-  <div class="asker-container">
     <div class="email">
       <%= @question.asker.email %>
     </div>
@@ -27,27 +27,38 @@
     </div>
 
     <% if @question.asker.shopify_id %>
-      <%= link_to @question.asker.shopify_id, "https://#{@shop_session.url}/admin/customers/#{@question.asker.shopify_id}", target: "_top" %>
+      <div class="shopify-url">
+        <%= link_to(@question.asker.shopify_id, "https://#{@shop_session.url}/admin/customers/#{@question.asker.shopify_id}", target: "_top") %>
+      </div>
     <% end %>
   </div>
 
-  <%= link_to((@question.published? ? "Unpublish from Store" : "Publish to Store"), admin_question_path(@question), method: :put) %>
-
   <div class="answers-container">
-    A total of <%= @question.answers_count %> answers.
+    A total of <strong><%= @question.answers_count %></strong> answers.
 
-    <ul>
-      <% @question.answers.each do |answer| %>
-        <% if answer.persisted? %>
-          <li><%= answer.body %> | <%= link_to("Edit", edit_admin_question_answer_path(@question, answer)) %> | <%= link_to("Delete", admin_question_answer_path(@question, answer), method: :delete) %></li>
+    <table class="table table-bordered table-condensed table-striped">
+      <thead>
+        <th>Answer</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        <% @question.answers.each do |answer| %>
+          <% if answer.persisted? %>
+            <tr>
+              <td><%= answer.body %></td>
+              <td>
+                <%= link_to("Edit", edit_admin_question_answer_path(@question, answer)) %> |
+                <%= link_to("Delete", admin_question_answer_path(@question, answer), method: :delete) %>
+              </td>
+            </tr>
+          <% end %>
         <% end %>
-      <% end %>
-    </ul>
+      </tbody>
+    </table>
   </div>
 
   <div class="answer-form-container">
     Answer this question:
-    <br />
     <%= form_for([:admin, @question, @answer]) do |f| %>
       <% if @answer.errors.any? %>
         <ul class="answer-errors">
@@ -56,12 +67,17 @@
           <% end %>
         </ul>
       <% end %>
-      <%= f.text_area :body %>
-      <br />
+      <div class="form-group">
+        <%= f.text_area :body, class: "form-control" %>
+      </div>
 
-      <%= f.submit %>
+      <div class="form-group">
+        <%= f.submit class: "form-control" %>
+      </div>
     <% end %>
   </div>
-</div>
 
-<%= link_to("Dashboard", admin_root_path) %>
+  <div class="well well-sm">
+    <%= link_to((@question.published? ? "Unpublish this question from Store" : "Publish this question to Store"), admin_question_path(@question), method: :put) %>
+  </div>
+</div>

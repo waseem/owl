@@ -1,3 +1,25 @@
-<%= render(partial: 'questions', object: @questions) %>
+<table class="table table-bordered table-condensed table-striped">
+  <thead>
+    <th>ID</th>
+    <th>Question</th>
+    <th>Published</th>
+  </thead>
 
-<%= link_to("Dashboard", admin_root_path) %>
+  <tbody>
+    <% @questions.each do |question| %>
+      <tr>
+        <td>
+          <%= link_to(question.id, admin_question_path(question.id)) %>
+        </td>
+        <td>
+          <%= question.body %>
+        </td>
+        <td>
+          <%= yes_or_no(question.published) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate(@questions) %>

@@ -9,8 +9,10 @@
 <h2>Editing Answer# <%= @answer.id %></h2>
 
 <div class="answer-form-container">
-  <%= @answer.question.body %>
-  <br/>
+  <div class="well well-lg">
+    <span><%= link_to("View", admin_question_path(@answer.question.id)) %>:
+    <%= @answer.question.body %>
+  </div>
 
   <%= form_for([:admin, @answer.question, @answer]) do |f| %>
     <% if @answer.errors.any? %>
@@ -20,11 +22,12 @@
         <% end %>
       </ul>
     <% end %>
-    <%= f.text_area :body %>
-    <br />
+    <div class="form-group">
+      <%= f.text_area :body, class: "form-control" %>
+    </div>
 
-    <%= f.submit %>
+    <div class="form-group">
+      <%= f.submit class: "form-control" %>
+    </div>
   <% end %>
 </div>
-
-<%= link_to("Dashboard", admin_root_path) %>
