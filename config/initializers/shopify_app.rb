@@ -6,4 +6,11 @@ ShopifyApp.configure do |config|
   config.embedded_app = true
   config.after_authenticate_job = false
   config.session_repository = Shop
+  if %w(staging production).include?(Rails.env)
+    config.scriptags = [
+      {
+        event: 'onload', src: 'http://indiarides.in/question.js'
+      }
+    ]
+  end
 end

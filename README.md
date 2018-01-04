@@ -23,3 +23,11 @@ irb> script_tag.save
 
 * Searching of questions and answers
 * Votes on Questions/Sorted by votes
+
+## Installing app to a Shopify Store
+
+1. Go to `/login` and enter myshopify url of the shop and install the app to shop.
+2. Edit the `sections/product-template.liquid` in shop's code to include the question form.
+3. Add a new `assets/product-questions.scss.liquid` in shop's code to change the design of the form.
+4. Change the relevant layout in shop code to include above scss file.
+5. In Apps section of shop dashboard, edit proxy URL to `http://<shop-name>.myshopify.com/a/` and subpath `q`.
