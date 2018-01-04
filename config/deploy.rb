@@ -36,7 +36,7 @@ set :keep_assets, 5
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, "config/database.yml", "config/secrets.yml", "log/nginx.access.log", "log/nginx.error.log"
+append :linked_files, "config/database.yml", "config/secrets.yml", "log/nginx.access.log", "log/nginx.error.log", ".env"
 
 # Default value for linked_dirs is []
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "vendor/bundle", "tmp/sockets", "public/system"
