@@ -9,7 +9,7 @@ ShopifyApp.configure do |config|
   if %w(staging production).include?(Rails.env)
     config.scripttags = [
       {
-        event: 'onload', src: 'http://indiarides.in/question.js'
+        event: 'onload', src: 'https://indiarides.in/question.js'
       }
     ]
   end
