@@ -160,7 +160,7 @@ RSpec.describe QuestionsController, type: :controller do
 
         it "renders first four product questions json" do
           questions = product.questions.published.limit(10)
-          expected_json = {"questions" => []}
+          expected_json = {"pagination" => { "is_last_page" => true, "current_page" => 1 }, "questions" => []}
           questions.each do |question|
             expected_json["questions"].push({
               "id" => question.id,
