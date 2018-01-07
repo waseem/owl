@@ -1,3 +1,24 @@
+## Setting up Development environment
+
+1. Clone the respository and do `bundle install` to install all the gems.
+2. Create a Shopify App in Partners Dashboard and note down its API credentials.
+3. Create a `.env` file with following content
+```
+SHOPIFY_CLIENT_API_KEY=<API key>
+SHOPIFY_CLIENT_API_SECRET=<API secret key>
+
+```
+4. Create `config/database.yml` and `config/secrets.yml` with appropriate content
+5. `bundle exec rake db:create:all`
+6. `bundle exec rake db:migrate`
+7. `bundle exec rspec spec`
+8. Use [ngrok](https://ngrok.com/docs/2#expose) to expose your rails server to internet.
+9. Change `App URL`, `Whitelisted redirection URL(s)` in Shopify App settings.
+10. Change `App Proxy` URL with Sub path prefix of `a` and Sub path of `q` with ngrok URL generated in step 8 as Proxy URL.
+11. `bundle exec rails s`
+12. Visit `localhost:3000/login`
+
+
 ## Updating Shopify Script Tag
 
 script tag id `3376906267`
