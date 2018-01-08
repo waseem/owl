@@ -35,9 +35,9 @@ module Admin
       @answer = @question.answers.find(params[:id])
 
       if @answer.destroy
-        flash[:notice] = "Answer saved successfully!"
+        flash[:notice] = "Answer deleted successfully!"
       else
-        flash[:error] = "Something went wrong saving the answer. Please correct the errors and try again."
+        flash[:error] = "Something went wrong deleting the answer. Please correct the errors and try again."
       end
 
       redirect_to admin_question_url(@question)
